@@ -7,6 +7,15 @@ pipeline {
         
     }
   stages {
+     stage('Checkout Git') {
+            steps {
+                script {
+                    git branch: 'main',
+                        url: 'https://github.com/balkissghanmi/GoL.git',
+                        credentialsId: 'test' 
+                }
+            }
+        }
    stage('NPM Clean'){
         steps{
             sh 'npm cache clean --force'

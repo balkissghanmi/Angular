@@ -11,7 +11,7 @@ pipeline {
             sh 'npm cache clean --force'
              sh 'npm install --legacy-peer-deps --verbose'
              sh 'npm run build'
-             sh'semgrep ci'
+             sh"docker run -e SEMGREP_APP_TOKEN=1c87866c63498142b962151e4b3f762e2d7b7b5985048391c299968d474708b8 --rm -v "${PWD}:/src" semgrep/semgrep semgrep ci"
         }
     }
     //  stage('SonarQube Analysis') {

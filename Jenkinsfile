@@ -11,7 +11,7 @@ pipeline {
             steps {
                 script {
                     git branch: 'main',
-                        url: 'https://github.com/balkissghanmi/GoL.git',
+                        url: 'https://github.com/balkissghanmi/Angular.git',
                         credentialsId: 'test' 
                 }
             }

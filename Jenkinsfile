@@ -21,8 +21,7 @@ pipeline {
             sh 'npm cache clean --force'
              sh 'npm install --legacy-peer-deps --verbose'
              sh 'npm run build'
-             //sh "docker run -e SEMGREP_APP_TOKEN=${SEMGREP_APP_TOKEN} --rm -v ${PWD}:/src semgrep/semgrep semgrep ci"
-             sh "docker run -e SEMGREP_APP_TOKEN=${SEMGREP_APP_TOKEN} --rm -v /var/lib/jenkins/workspace/Front/src semgrep/semgrep semgrep ci"
+             sh 'docker run -e SEMGREP_APP_TOKEN=${SEMGREP_APP_TOKEN} --rm -v ${PWD}:/src semgrep/semgrep semgrep ci --config "p/ci" '
 
         }
     }

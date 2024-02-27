@@ -24,7 +24,7 @@ pipeline {
              sh'pwd'
              sh "ls -la"
              sh "docker run -e SEMGREP_APP_TOKEN=${SEMGREP_APP_TOKEN} --rm -v \${PWD}:/src semgrep/semgrep semgrep ci "
-
+       //sh "docker run -v ${WORKSPACE}:/src --workdir /src semgrep/semgrep --config p/ci"
         }
     }
     //  stage('SonarQube Analysis') {

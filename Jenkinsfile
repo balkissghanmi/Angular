@@ -35,17 +35,17 @@ pipeline {
     //         }
     //     }
     // }
-    // stage('Docker'){
-    //     steps {
-    //         script{
-    //             sh "docker build -t ${STAGING_TAG} ."
-    //             withCredentials([usernamePassword(credentialsId: 'tc', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
-    //             sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
-    //             sh "docker push ${STAGING_TAG}"
-    //         }
-    //     }
-    // }
-    // }
+    stage('Docker'){
+        steps {
+            script{
+                sh "docker build -t ${STAGING_TAG} ."
+                withCredentials([usernamePassword(credentialsId: 'tc', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
+                sh "docker push ${STAGING_TAG}"
+            }
+        }
+    }
+    }
 
   }
 }

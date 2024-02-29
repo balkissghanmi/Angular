@@ -1,8 +1,9 @@
 FROM node:latest as build
 WORKDIR /app
-COPY ./ /app
 
-RUN npm install
+COPY package*.json /app/
+RUN npm install  --legacy-peer-deps --verbose
+COPY ./ /app/
 RUN npm run build
 
 FROM nginx:latest

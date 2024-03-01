@@ -7,4 +7,4 @@ RUN npm run build
 FROM nginx:latest
 RUN rm -rf /usr/share/nginx/html/*
 COPY --from=build /app/dist/ang /usr/share/nginx/html
-EXPOSE 80
+EXPOSE 8088

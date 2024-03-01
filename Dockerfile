@@ -1,15 +1,10 @@
-
-FROM node:18 as builder
+FROM node:latest as build
 WORKDIR /app
+COPY ./ /app
+RUN npm install
+RUN npm run build
 
-COPY package.json package-lock.json ./
-RUN npm install  --legacy-peer-deps
-
-COPY . .
-RUN npm run build --prod
-
-FROM nginx:alpine
+FROM nginx:latest
 RUN rm -rf /usr/share/nginx/html/*
-COPY --from=builder /app/dist/ang /usr/share/nginx/html
-EXPOSE 8087
-CMD ["nginx", "-g", "daemon off;"]
+COPY --from=build /app/dist/ang /usr/share/nginx/html
+EXPOSE 80

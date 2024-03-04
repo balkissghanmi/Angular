@@ -1,9 +1,11 @@
-FROM node:latest as build
+# Stage 1: Build the Angular app
+FROM node:latest as build-stage
 WORKDIR /app
-COPY . .
+COPY package*.json ./
 RUN npm install
+COPY . .
 RUN npm run build
 
+# Stage 2: Serve the app with Nginx
 FROM nginx:alpine
-COPY --from=build /app/dist/ang /usr/share/nginx/html
-
+COPY --from=build-stage /app/dist/your-app-name /usr/share/nginx/html

@@ -21,7 +21,7 @@ pipeline {
             sh 'npm cache clean --force'
              sh 'npm install --legacy-peer-deps --verbose'
              sh 'npm run build'
-             sh 'npm test'
+             sh 'ng test --no-watch --no-progress --browsers=ChromeHeadless'
              sh'pwd'
              sh "ls -la"
            //  sh "docker run -e SEMGREP_APP_TOKEN=${SEMGREP_APP_TOKEN} --rm -v \${PWD}:/src semgrep/semgrep semgrep ci "

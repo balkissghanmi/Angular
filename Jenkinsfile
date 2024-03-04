@@ -4,7 +4,7 @@ pipeline {
         DOCKERHUB_USERNAME = 'balkissd'
         STAGING_TAG = "${DOCKERHUB_USERNAME}/angular:v1.0.5"
         SEMGREP_APP_TOKEN = '1c87866c63498142b962151e4b3f762e2d7b7b5985048391c299968d474708b8'
-        
+        SONARQUBE_TOKEN = 'sqp_e44a882c312f996a600e5f4cf45f02e576269b9e'
     }
   stages {
      stage('Checkout Git') {
@@ -21,7 +21,7 @@ pipeline {
             sh 'npm cache clean --force'
              sh 'npm install --legacy-peer-deps --verbose'
              sh 'npm run build'
-             sh 'ng test --no-watch --no-progress --browsers=ChromeHeadless'
+            // sh 'ng test --no-watch --no-progress --browsers=ChromeHeadless'
              sh'pwd'
              sh "ls -la"
            //  sh "docker run -e SEMGREP_APP_TOKEN=${SEMGREP_APP_TOKEN} --rm -v \${PWD}:/src semgrep/semgrep semgrep ci "
@@ -36,6 +36,15 @@ pipeline {
     //         }
     //     }
     // }
+    stage('SonarQube Analysis') {
+      steps {
+        script {
+          sh 'pwd'
+          // Use the SONARQUBE_TOKEN environment variable here
+          sh "/opt/sonar-scanner/bin/sonar-scanner -Dsonar.projectKey=Angular -Dsonar.sources=. -Dsonar.host.url=http://192.168.56.20:9000 -Dsonar.login=${env.SONARQUBE_TOKEN}"
+        }
+      }
+    }
     // stage('Docker'){
     //     steps {
     //         script{

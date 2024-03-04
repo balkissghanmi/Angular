@@ -4,7 +4,6 @@ pipeline {
         DOCKERHUB_USERNAME = 'balkissd'
         STAGING_TAG = "${DOCKERHUB_USERNAME}/angular:v1.0.5"
         SEMGREP_APP_TOKEN = '1c87866c63498142b962151e4b3f762e2d7b7b5985048391c299968d474708b8'
-        SONARQUBE_TOKEN = 'sqp_e44a882c312f996a600e5f4cf45f02e576269b9e'
     }
   stages {
      stage('Checkout Git') {
@@ -24,7 +23,8 @@ pipeline {
             // sh 'ng test --no-watch --no-progress --browsers=ChromeHeadless'
              sh'pwd'
              sh "ls -la"
-             sh "docker run -e SEMGREP_APP_TOKEN=${SEMGREP_APP_TOKEN} --rm -v \${PWD}:/src semgrep/semgrep semgrep ci "
+             sh "npm test"
+           //  sh "docker run -e SEMGREP_APP_TOKEN=${SEMGREP_APP_TOKEN} --rm -v \${PWD}:/src semgrep/semgrep semgrep ci "
        //sh "docker run -v ${WORKSPACE}:/src --workdir /src semgrep/semgrep --config p/ci"
         }
     }

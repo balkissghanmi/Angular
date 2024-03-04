@@ -39,11 +39,11 @@ pipeline {
     stage('SonarQube Analysis') {
       steps {
         script {
-          
         withSonarQubeEnv (installationName: 'sonarqube-scanner') {
           sh "/opt/sonar-scanner/bin/sonar-scanner "
         }
       }
+    }
     }
     // stage('Docker'){
     //     steps {

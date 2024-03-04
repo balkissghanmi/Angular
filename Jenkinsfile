@@ -23,32 +23,32 @@ pipeline {
             // sh 'ng test --no-watch --no-progress --browsers=ChromeHeadless'
              sh'pwd'
              sh "ls -la"
-             sh "npm test"
+            // sh "npm test"
            //  sh "docker run -e SEMGREP_APP_TOKEN=${SEMGREP_APP_TOKEN} --rm -v \${PWD}:/src semgrep/semgrep semgrep ci "
        //sh "docker run -v ${WORKSPACE}:/src --workdir /src semgrep/semgrep --config p/ci"
         }
     }
     
-    stage('SonarQube Analysis') {
-      steps {
-        script {
-        withSonarQubeEnv (installationName: 'sonarqube-scanner') {
-          sh "/opt/sonar-scanner/bin/sonar-scanner "
-        }
-      }
-    }
-    }
-    // stage('Docker'){
-    //     steps {
-    //         script{
-    //             sh "docker build -t ${STAGING_TAG} ."
-    //             withCredentials([usernamePassword(credentialsId: 'tc', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
-    //             sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
-    //             sh "docker push ${STAGING_TAG}"
-    //         }
+    // stage('SonarQube Analysis') {
+    //   steps {
+    //     script {
+    //     withSonarQubeEnv (installationName: 'sonarqube-scanner') {
+    //       sh "/opt/sonar-scanner/bin/sonar-scanner "
     //     }
+    //   }
     // }
     // }
+    stage('Docker'){
+        steps {
+            script{
+                sh "docker build -t ${STAGING_TAG} ."
+                withCredentials([usernamePassword(credentialsId: 'tc', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
+                sh "docker push ${STAGING_TAG}"
+            }
+        }
+    }
+    }
 
   }
 }

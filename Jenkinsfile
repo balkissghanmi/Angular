@@ -28,14 +28,7 @@ pipeline {
        //sh "docker run -v ${WORKSPACE}:/src --workdir /src semgrep/semgrep --config p/ci"
         }
     }
-    //  stage('SonarQube Analysis') {
-    //         steps {
-    //             script {
-    //                      sh 'pwd'
-    //                      sh  '/opt/sonar-scanner/bin/sonar-scanner -Dsonar.projectKey=Angular -Dsonar.sources=. -Dsonar.host.url=http://192.168.56.20:9000 -Dsonar.login=sqp_e44a882c312f996a600e5f4cf45f02e576269b9e'
-    //         }
-    //     }
-    // }
+    
     stage('SonarQube Analysis') {
       steps {
         script {

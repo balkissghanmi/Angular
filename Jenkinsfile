@@ -39,9 +39,9 @@ pipeline {
     stage('SonarQube Analysis') {
       steps {
         script {
-          sh 'pwd'
-          // Use the SONARQUBE_TOKEN environment variable here
-          sh "/opt/sonar-scanner/bin/sonar-scanner -Dsonar.projectKey=Angular -Dsonar.sources=. -Dsonar.host.url=http://192.168.56.20:9000 -Dsonar.login=${env.SONARQUBE_TOKEN}"
+          
+        withSonarQubeEnv (installationName: 'sonarqube-scanner') {
+          sh "/opt/sonar-scanner/bin/sonar-scanner "
         }
       }
     }

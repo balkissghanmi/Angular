@@ -8,5 +8,5 @@ RUN npm run build
 # Serve stage
 FROM nginx:alpine
 COPY --from=build-stage /app/dist/ang /usr/share/nginx/html
-EXPOSE 80
+EXPOSE 8087
 

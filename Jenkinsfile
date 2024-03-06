@@ -52,7 +52,7 @@ pipeline {
     stage('Pull Docker Image on Remote Server') {
             steps {
                 sshagent(['ssh-agent']) {
-                    sh ' ssh -o StrictHostKeyChecking=no vagrant@192.168.56.7 "ls -a" '
+                    sh ' ssh -o StrictHostKeyChecking=no vagrant@192.168.56.7 "docker ps" '
                 }
             }
         }

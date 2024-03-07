@@ -29,32 +29,32 @@ pipeline {
         }
     }
     
-    // stage('SonarQube Analysis') {
-    //   steps {
-    //     script {
-    //     withSonarQubeEnv (installationName: 'sonarqube-scanner') {
-    //       sh "/opt/sonar-scanner/bin/sonar-scanner "
-    //     }
-    //   }
-    // }
-    // }
-    stage('Docker'){
-        steps {
-            script{
-                sh "docker build -t ${STAGING_TAG} ."
-                withCredentials([usernamePassword(credentialsId: 'tc', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
-                sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
-                sh "docker push ${STAGING_TAG}"
-            }
+    stage('SonarQube Analysis') {
+      steps {
+        script {
+        withSonarQubeEnv (installationName: 'sonarqube-scanner') {
+          sh "/opt/sonar-scanner/bin/sonar-scanner -Dsonar.projectKey=${ANGULARKEY} -Dsonar.sources=. -Dsonar.host.url=${SONARURL} -Dsonar.login=${ANGLOGIN} "
         }
+      }
     }
     }
-    stage('Pull Docker Image on Remote Server') {
-            steps {
-                sshagent(['ssh-agent']) {
-                    sh ' ssh -o StrictHostKeyChecking=no vagrant@192.168.56.7 "docker run -d --name front -p 80:80 balkissd/angular:v1.0.0" '
-                }
-            }
-        }
-  }
+//     stage('Docker'){
+//         steps {
+//             script{
+//                 sh "docker build -t ${STAGING_TAG} ."
+//                 withCredentials([usernamePassword(credentialsId: 'tc', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+//                 sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
+//                 sh "docker push ${STAGING_TAG}"
+//             }
+//         }
+//     }
+//     }
+//     stage('Pull Docker Image on Remote Server') {
+//             steps {
+//                 sshagent(['ssh-agent']) {
+//                     sh ' ssh -o StrictHostKeyChecking=no vagrant@192.168.56.7 "docker run -d --name front -p 80:80 balkissd/angular:v1.0.0" '
+//                 }
+//             }
+//         }
+//   }
 }

@@ -21,9 +21,7 @@ pipeline {
              sh 'npm install --legacy-peer-deps --verbose'
              sh 'npm run build'
             // sh 'ng test --no-watch --no-progress --browsers=ChromeHeadless'
-             sh'pwd'
-             sh "ls -la"
-            // sh "npm test"
+            sh ' npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI'
            //  sh "docker run -e SEMGREP_APP_TOKEN=${SEMGREP_APP_TOKEN} --rm -v \${PWD}:/src semgrep/semgrep semgrep ci "
        //sh "docker run -v ${WORKSPACE}:/src --workdir /src semgrep/semgrep --config p/ci"
         }

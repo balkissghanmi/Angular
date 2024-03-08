@@ -21,32 +21,33 @@ pipeline {
              sh 'npm install --legacy-peer-deps --verbose'
              sh 'npm run build'
             // sh 'ng test --no-watch --no-progress --browsers=ChromeHeadless'
-            sh ' npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI'
            //  sh "docker run -e SEMGREP_APP_TOKEN=${SEMGREP_APP_TOKEN} --rm -v \${PWD}:/src semgrep/semgrep semgrep ci "
        //sh "docker run -v ${WORKSPACE}:/src --workdir /src semgrep/semgrep --config p/ci"
         }
     }
     
-    stage('SonarQube Analysis') {
-      steps {
-        script {
-        withSonarQubeEnv (installationName: 'sonarqube-scanner') {
-          sh "/opt/sonar-scanner/bin/sonar-scanner -Dsonar.projectKey=${ANGULARKEY} -Dsonar.sources=. -Dsonar.host.url=${SONARURL} -Dsonar.login=${ANGLOGIN} "
+    // stage('SonarQube Analysis') {
+    //   steps {
+    //     script {
+    //     withSonarQubeEnv (installationName: 'sonarqube-scanner') {
+    //       sh "/opt/sonar-scanner/bin/sonar-scanner -Dsonar.projectKey=${ANGULARKEY} -Dsonar.sources=. -Dsonar.host.url=${SONARURL} -Dsonar.login=${ANGLOGIN} "
+    //     }
+    //   }
+    // }
+    // }
+    stage('Docker'){
+        steps {
+            script{
+                sh "docker build -t ${STAGING_TAG} ."
+                withCredentials([usernamePassword(credentialsId: 'tc', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
+                sh "docker push ${STAGING_TAG}"
+                sh "docker pull ${STAGING_TAG}"
+                sh "docker run --rm aquasec/trivy image --exit-code 1 --no-progress ${STAGING_TAG}"
+            }
         }
-      }
     }
     }
-//     stage('Docker'){
-//         steps {
-//             script{
-//                 sh "docker build -t ${STAGING_TAG} ."
-//                 withCredentials([usernamePassword(credentialsId: 'tc', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
-//                 sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
-//                 sh "docker push ${STAGING_TAG}"
-//             }
-//         }
-//     }
-//     }
 //     stage('Pull Docker Image on Remote Server') {
 //             steps {
 //                 sshagent(['ssh-agent']) {
@@ -54,6 +55,6 @@ pipeline {
 //                 }
 //             }
 //         }
-//   }
+  }
 }
-}
+

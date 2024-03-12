@@ -44,6 +44,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'tc', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
                 sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
                 sh "docker push ${STAGING_TAG}"
+                sh "docker run -t  owasp/zap2docker-stable zap-baseline.py -t  http://192.168.56.7:80/"
            //     sh "docker pull ${STAGING_TAG}"
             //    sh "docker run --rm aquasec/trivy image --exit-code 1 --no-progress ${STAGING_TAG}"
             }
@@ -58,37 +59,37 @@ pipeline {
 //             }
 //         }
 
- stage('OWASP ZAP Scan') {
-            steps {
-                script {
-                    // Create report directory
-                    sh "mkdir -p ${REPORT_PATH}"
+//  stage('OWASP ZAP Scan') {
+//             steps {
+//                 script {
+//                     // Create report directory
+//                     sh "mkdir -p ${REPORT_PATH}"
                     
-                    // Run ZAP Baseline Scan
-                    sh """
-                    docker run --rm \
-                        -v \$(pwd)/${REPORT_PATH}:/zap/wrk/:rw \
-                        owasp/zap2docker-stable zap-baseline.py \
-                        -t http://192.168.56.7:80/ \
-                        -r ${REPORT_NAME}
-                    """
-                }
-            }
-        }
+//                     // Run ZAP Baseline Scan
+//                     sh """
+//                     docker run --rm \
+//                         -v \$(pwd)/${REPORT_PATH}:/zap/wrk/:rw \
+//                         owasp/zap2docker-stable zap-baseline.py \
+//                         -t http://192.168.56.7:80/ \
+//                         -r ${REPORT_NAME}
+//                     """
+//                 }
+//             }
+//         }
         
-        stage('Publish Report') {
-            steps {
-                publishHTML([
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true,
-                    reportDir: "${REPORT_PATH}",
-                    reportFiles: "${REPORT_NAME}",
-                    reportName: "OWASP ZAP Security Report",
-                    reportTitles: ""
-                ])
-            }
-        }
+        // stage('Publish Report') {
+        //     steps {
+        //         publishHTML([
+        //             allowMissing: false,
+        //             alwaysLinkToLastBuild: true,
+        //             keepAll: true,
+        //             reportDir: "${REPORT_PATH}",
+        //             reportFiles: "${REPORT_NAME}",
+        //             reportName: "OWASP ZAP Security Report",
+        //             reportTitles: ""
+        //         ])
+        //     }
+        // }
     }
   }
 

@@ -44,9 +44,10 @@ pipeline {
     //             withCredentials([usernamePassword(credentialsId: 'tc', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
     //             sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
     //             sh "docker push ${STAGING_TAG}"
-    //             sh "docker run -t  owasp/zap2docker-stable zap-baseline.py -t  http://192.168.56.7:80/ || true"
-    //        //     sh "docker pull ${STAGING_TAG}"
-    //         //    sh "docker run --rm aquasec/trivy image --exit-code 1 --no-progress ${STAGING_TAG}"
+      // sh "docker pull ${STAGING_TAG}"
+       sh "docker run --rm aquasec/trivy image --exit-code 1 --no-progress ${STAGING_TAG}"
+      sh "docker run -t  owasp/zap2docker-stable zap-baseline.py -t  http://192.168.56.7:80/ || true"
+
     //         }
     //     }
     // }
@@ -90,23 +91,16 @@ pipeline {
         //         ])
         //     }
         // }
-    stage('Talisman Scan') {
-    steps {
-        script {
-            // Download Talisman binary
-            //sh 'curl -Ls https://github.com/thoughtworks/talisman/releases/download/v1.11.0/talisman_linux_amd64 -o talisman'
-           // sh 'chmod +x talisman'
-
-            // Run Talisman scan on the current directory
-            // Adjust --pattern or other flags according to your needs
-           sh '/usr/local/bin/talisman --scan ' 
-
-
-            // Cleanup if you don't need the binary afterwards
-            sh 'rm -f talisman'
-        }
-    }
-}
+//     stage('Talisman Scan') {
+//     steps {
+//         script {
+//             //sh 'curl -Ls https://github.com/thoughtworks/talisman/releases/download/v1.11.0/talisman_linux_amd64 -o talisman'
+//            // sh 'chmod +x talisman'
+//            sh '/usr/local/bin/talisman --scan --pattern=**/* > talisman_report.txt 2>&1' 
+//            sh 'rm -f talisman'
+//         }
+//     }
+// }
 
     }
   }

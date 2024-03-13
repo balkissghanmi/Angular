@@ -51,6 +51,7 @@ pipeline {
              }
          }
      }
+     }
     
 //     stage('Pull Docker Image on Remote Server') {
 //             steps {

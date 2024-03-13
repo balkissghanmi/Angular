@@ -38,8 +38,8 @@ pipeline {
     // }
     // }
      stage('Docker'){
-    //     steps {
-    //         script{
+        steps {
+             script{
     //             sh "docker build -t ${STAGING_TAG} ."
     //             withCredentials([usernamePassword(credentialsId: 'tc', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
     //             sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"

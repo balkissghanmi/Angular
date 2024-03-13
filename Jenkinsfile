@@ -37,7 +37,7 @@ pipeline {
     //   }
     // }
     // }
-    // stage('Docker'){
+     stage('Docker'){
     //     steps {
     //         script{
     //             sh "docker build -t ${STAGING_TAG} ."

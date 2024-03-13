@@ -48,10 +48,10 @@ pipeline {
        sh "docker run --rm aquasec/trivy image --exit-code 1 --no-progress ${STAGING_TAG}"
       sh "docker run -t  owasp/zap2docker-stable zap-baseline.py -t  http://192.168.56.7:80/ || true"
 
-    //         }
-    //     }
-    // }
+             }
+         }
      }
+    
 //     stage('Pull Docker Image on Remote Server') {
 //             steps {
 //                 sshagent(['ssh-agent']) {
@@ -104,5 +104,3 @@ pipeline {
 
     }
   }
-
-

@@ -99,7 +99,7 @@ pipeline {
 
             // Run Talisman scan on the current directory
             // Adjust --pattern or other flags according to your needs
-            sh './talisman --scan --pattern="**/*"'
+           sh '/usr/local/bin/talisman --scan --pattern=**/*'
 
             // Cleanup if you don't need the binary afterwards
             sh 'rm -f talisman'

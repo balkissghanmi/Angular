@@ -40,13 +40,12 @@ pipeline {
     } 
     stage('Snyk Container') {
       steps {
-        sh'docker run -d --name frontt -p 80:80 balkissd/angular:v1.0.0'
         snykSecurity(
           snykInstallation: 'snyk@latest',
           snykTokenId: 'snyk-token',
           failOnIssues: 'false',
           monitorProjectOnBuild: 'true',
-          additionalArguments: '--container balkissd/angular:v1.0.0 -d'
+          additionalArguments: '--container ${STAGING_TAG} -d'
         )
       }
     } 

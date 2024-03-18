@@ -46,7 +46,7 @@ pipeline {
           snykTokenId: 'snyk-token',
           failOnIssues: 'false',
           monitorProjectOnBuild: 'true',
-          additionalArguments: '--container frontt -d'
+          additionalArguments: '--container balkissd/angular:v1.0.0 -d'
         )
       }
     } 

@@ -27,7 +27,18 @@ pipeline {
        //sh "docker run -v ${WORKSPACE}:/src --workdir /src semgrep/semgrep --config p/ci"
         }
     }
-    
+    stage('Test') {
+      steps {
+        echo 'Testing...'
+        snykSecurity(
+          snykInstallation: 'snyk@latest',
+          snykTokenId: 'snyk-token',
+          failOnIssues: 'false',
+          monitorProjectOnBuild: 'true',
+          additionalArguments: '--all-projects --d'
+        )
+      }
+    } 
     // stage('SonarQube Analysis') {
     //   steps {
     //     script {
@@ -37,21 +48,21 @@ pipeline {
     //   }
     // }
     // }
-     stage('Docker'){
-        steps {
-             script{
-                 sh "docker build -t ${STAGING_TAG} ."
-                 withCredentials([usernamePassword(credentialsId: 'tc', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
-                 sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
-                 sh "docker push ${STAGING_TAG}"
-       sh "docker pull ${STAGING_TAG}"
-       sh "docker run --rm aquasec/trivy image --exit-code 1 --no-progress ${STAGING_TAG}"
-      sh "docker run -t  owasp/zap2docker-stable zap-baseline.py -t  http://192.168.56.7:80/ || true"
+    //  stage('Docker'){
+    //     steps {
+    //          script{
+    //              sh "docker build -t ${STAGING_TAG} ."
+    //              withCredentials([usernamePassword(credentialsId: 'tc', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+    //              sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
+    //              sh "docker push ${STAGING_TAG}"
+    //    sh "docker pull ${STAGING_TAG}"
+    //    sh "docker run --rm aquasec/trivy image --exit-code 1 --no-progress ${STAGING_TAG}"
+    //   sh "docker run -t  owasp/zap2docker-stable zap-baseline.py -t  http://192.168.56.7:80/ || true"
 
-             }
-         }
-     }
-     }
+    //          }
+    //      }
+    //  }
+    //  }
     
 //     stage('Pull Docker Image on Remote Server') {
 //             steps {

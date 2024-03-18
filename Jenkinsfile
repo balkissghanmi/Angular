@@ -27,15 +27,26 @@ pipeline {
        //sh "docker run -v ${WORKSPACE}:/src --workdir /src semgrep/semgrep --config p/ci"
         }
     }
-    stage('Test') {
+    stage('Snyk Test') {
       steps {
-        echo 'Testing...'
         snykSecurity(
           snykInstallation: 'snyk@latest',
           snykTokenId: 'snyk-token',
           failOnIssues: 'false',
           monitorProjectOnBuild: 'true',
           additionalArguments: '--all-projects --d'
+        )
+      }
+    } 
+    stage('Snyk Container') {
+      steps {
+        sh'docker run -d --name frontt -p 80:80 balkissd/angular:v1.0.0'
+        snykSecurity(
+          snykInstallation: 'snyk@latest',
+          snykTokenId: 'snyk-token',
+          failOnIssues: 'false',
+          monitorProjectOnBuild: 'true',
+          additionalArguments: '--container frontt -d'
         )
       }
     } 

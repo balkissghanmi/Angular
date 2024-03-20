@@ -7,7 +7,7 @@ pipeline {
         REPORT_PATH = 'zap-reports'
         REPORT_NAME = 'report.html'
     }
-    stages {
+    stages { 
         stage('Checkout Git') {
             steps {
                 script {

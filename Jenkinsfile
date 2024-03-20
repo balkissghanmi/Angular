@@ -92,7 +92,7 @@ pipeline {
                     snykTokenId: 'snyk-token',
                     failOnIssues: 'false',
                     monitorProjectOnBuild: 'true',
-                    additionalArguments: '--container ${STAGING_TAG} -d'
+                    additionalArguments: '--container ${STAGING_TAG} -d' 
                 )
             }
         }

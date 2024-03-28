@@ -30,7 +30,7 @@ pipeline {
             steps {
                 script {
                     // Run ESLint
-                    //sh'npm init @eslint/config'
+                    sh'npm init @eslint/config'
                     sh'npx eslint --init'
                     sh 'npx eslint . --format junit --output-file eslint-report.xml'
                 }

@@ -25,25 +25,26 @@ pipeline {
                 }
             }
         }
-       
-
-        stage('Security Scanning - Retire.js') {
+        stage('Security Scanning - NodeJsScan') {
             steps {
                 script {
-                    // Install Retire.js
-                    sh 'npm install -g retire'
-                    // Run Retire.js
-                    sh 'retire --outputformat json > retire-report.json'
+                    // Install NodeJsScan
+                    sh' cd NodeJsScan'
+
+                    sh 'npm install -g nodejsscan'
+                    // Run NodeJsScan
+                    sh 'nodejsscan --path . --output=nodejsscan-report.json'
                 }
                 post {
                     always {
-                        // Archive Retire.js reports
-                        archiveArtifacts 'retire-report.json'
-                        // Optionally, you can process and display the Retire.js results here
+                        // Archive NodeJsScan reports
+                        archiveArtifacts 'nodejsscan-report.json'
+                        // Optionally, you can process and display the NodeJsScan results here
                     }
                 }
             }
         }
+
         stage('NPM Build'){
             steps {
                 //sh 'npm cache clean --force'

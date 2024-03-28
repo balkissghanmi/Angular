@@ -22,26 +22,14 @@ pipeline {
                 script {
                    sh 'npm cache clean --force'
                 sh 'npm install --legacy-peer-deps --verbose'
+                sh 'npx codelyzer .'
+                    // Run ngx-lint
+                    sh 'npx ngx-lint'
+                    sh 'npx angular-security-analyzer'
                 }
             }
         }
-        stage('Security Scanning - NodeJsScan') {
-            steps {
-                script {
-
-                    sh 'npm install -g nodejsscan'
-                    // Run NodeJsScan
-                    sh 'nodejsscan --path . --output=nodejsscan-report.json'
-                }
-                post {
-                    always {
-                        // Archive NodeJsScan reports
-                        archiveArtifacts 'nodejsscan-report.json'
-                        // Optionally, you can process and display the NodeJsScan results here
-                    }
-                }
-            }
-        }
+     
 
         stage('NPM Build'){
             steps {

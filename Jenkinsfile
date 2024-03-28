@@ -20,10 +20,8 @@ pipeline {
          stage('Install Dependencies') {
             steps {
                 script {
-                    // Install Node.js and npm
-                    env.NODEJS_HOME = tool 'nodejs'
-                    env.PATH="${env.NODEJS_HOME}/bin:${env.PATH}"
-                    sh 'npm install'
+                   sh 'npm cache clean --force'
+                sh 'npm install --legacy-peer-deps --verbose'
                 }
             }
         }
@@ -82,8 +80,8 @@ pipeline {
         }
         stage('NPM Build'){
             steps {
-                sh 'npm cache clean --force'
-                sh 'npm install --legacy-peer-deps --verbose'
+                //sh 'npm cache clean --force'
+                //sh 'npm install --legacy-peer-deps --verbose'
                 sh 'npm run build'
                 // sh 'ng test --no-watch --no-progress --browsers=ChromeHeadless'
             }

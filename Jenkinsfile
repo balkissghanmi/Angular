@@ -25,23 +25,7 @@ pipeline {
                 }
             }
         }
-        stage('Security Scanning - NodeJsScan') {
-            steps {
-                script {
-                    // Install NodeJsScan
-                    sh 'npm install -g nodejsscan'
-                    // Run NodeJsScan
-                    sh 'nodejsscan --path . --output=nodejsscan-report.json'
-                }
-                post {
-                    always {
-                        // Archive NodeJsScan reports
-                        archiveArtifacts 'nodejsscan-report.json'
-                        // Optionally, you can process and display the NodeJsScan results here
-                    }
-                }
-            }
-        }
+       
 
         stage('Security Scanning - Retire.js') {
             steps {

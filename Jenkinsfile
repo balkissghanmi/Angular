@@ -28,8 +28,6 @@ pipeline {
         stage('Security Scanning - NodeJsScan') {
             steps {
                 script {
-                    // Install NodeJsScan
-                    sh' cd NodeJsScan'
 
                     sh 'npm install -g nodejsscan'
                     // Run NodeJsScan

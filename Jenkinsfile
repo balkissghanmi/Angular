@@ -17,6 +17,69 @@ pipeline {
                 }
             }
         }
+         stage('Install Dependencies') {
+            steps {
+                script {
+                    // Install Node.js and npm
+                    env.NODEJS_HOME = tool 'nodejs'
+                    env.PATH="${env.NODEJS_HOME}/bin:${env.PATH}"
+                    sh 'npm install'
+                }
+            }
+        }
+
+        stage('Static Code Analysis - ESLint') {
+            steps {
+                script {
+                    // Run ESLint
+                    sh 'npx eslint . --format junit --output-file eslint-report.xml'
+                }
+                post {
+                    always {
+                        // Archive ESLint reports
+                        archiveArtifacts 'eslint-report.xml'
+                        // Publish ESLint reports in Jenkins
+                        publishIssues issues:[eslint(pattern:'**/eslint-report.xml')]
+                    }
+                }
+            }
+        }
+
+        stage('Security Scanning - NodeJsScan') {
+            steps {
+                script {
+                    // Install NodeJsScan
+                    sh 'npm install -g nodejsscan'
+                    // Run NodeJsScan
+                    sh 'nodejsscan --path . --output=nodejsscan-report.json'
+                }
+                post {
+                    always {
+                        // Archive NodeJsScan reports
+                        archiveArtifacts 'nodejsscan-report.json'
+                        // Optionally, you can process and display the NodeJsScan results here
+                    }
+                }
+            }
+        }
+
+        stage('Security Scanning - Retire.js') {
+            steps {
+                script {
+                    // Install Retire.js
+                    sh 'npm install -g retire'
+                    // Run Retire.js
+                    sh 'retire --outputformat json > retire-report.json'
+                }
+                post {
+                    always {
+                        // Archive Retire.js reports
+                        archiveArtifacts 'retire-report.json'
+                        // Optionally, you can process and display the Retire.js results here
+                    }
+                }
+            }
+        }
         stage('NPM Build'){
             steps {
                 sh 'npm cache clean --force'

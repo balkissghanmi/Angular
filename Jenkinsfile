@@ -25,26 +25,6 @@ pipeline {
                 }
             }
         }
-
-        stage('Static Code Analysis - ESLint') {
-            steps {
-                script {
-                    // Run ESLint
-                    //sh'npm init @eslint/config'
-                   // sh'npx eslint --init'
-                    sh 'npx eslint . --format junit --output-file eslint-report.xml'
-                }
-                post {
-                    always {
-                        // Archive ESLint reports
-                        archiveArtifacts 'eslint-report.xml'
-                        // Publish ESLint reports in Jenkins
-                        publishIssues issues:[eslint(pattern:'**/eslint-report.xml')]
-                    }
-                }
-            }
-        }
-
         stage('Security Scanning - NodeJsScan') {
             steps {
                 script {

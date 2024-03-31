@@ -17,26 +17,13 @@ pipeline {
                 }
             }
         }
-         stage('Install Dependencies') {
-            steps {
-                script {
-                   sh 'npm cache clean --force'
-                sh 'npm install --legacy-peer-deps --verbose'
-                sh 'npx codelyzer .'
-                    // Run ngx-lint
-                    sh 'npx ngx-lint'
-                    sh 'npx angular-security-analyzer'
-                }
-            }
-        }
-     
-
         stage('NPM Build'){
             steps {
                 //sh 'npm cache clean --force'
                 //sh 'npm install --legacy-peer-deps --verbose'
                 sh 'npm run build'
                 // sh 'ng test --no-watch --no-progress --browsers=ChromeHeadless'
+               sh' npx karma start karma.conf.js --single-run'
             }
         }
         stage('Dependencies Test with SNYK') {

@@ -19,11 +19,11 @@ pipeline {
         }
         stage('NPM Build'){
             steps {
-                //sh 'npm cache clean --force'
-                //sh 'npm install --legacy-peer-deps --verbose'
+                sh 'npm cache clean --force'
+                sh 'npm install --legacy-peer-deps --verbose'
                 sh 'npm run build'
                 // sh 'ng test --no-watch --no-progress --browsers=ChromeHeadless'
-               sh' npx karma start karma.conf.js --single-run'
+                sh' npx karma start karma.conf.js --single-run'
             }
         }
         stage('Dependencies Test with SNYK') {

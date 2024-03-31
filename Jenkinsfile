@@ -66,8 +66,9 @@ pipeline {
         }
         stage('Image Test with TRIVY') {
             steps {
-                sh "docker run --rm aquasec/trivy image --exit-code 1 --no-progress  ${STAGING_TAG}"
-                
+                //sh "docker run --rm aquasec/trivy image --exit-code 1 --no-progress  ${STAGING_TAG}"
+                sh "docker run --rm aquasec/trivy:latest --exit-code 1 --no-progress ${STAGING_TAG}"
+ 
             }
         }
         stage('Pull Docker Image on Remote Server') {

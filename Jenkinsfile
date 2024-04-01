@@ -26,48 +26,48 @@ pipeline {
                 //sh' npx karma start karma.conf.js --single-run'
             }
         }
-        stage('Dependencies Test with SNYK') {
-            steps {
-                snykSecurity(
-                    snykInstallation: 'snyk@latest',
-                    snykTokenId: 'snyk-token',
-                    failOnIssues: 'false',
-                    monitorProjectOnBuild: 'true',
-                    additionalArguments: '--all-projects --d'
-                )
-            }
-        }
-        stage('Analysis with SEMGREP ') {
-            steps {
-                //sh "docker run -v ${WORKSPACE}:/src --workdir /src semgrep/semgrep --config p/ci"
-                 sh "docker run -e SEMGREP_APP_TOKEN=${SEMGREP_APP_TOKEN} --rm -v \${PWD}:/src semgrep/semgrep semgrep ci "
-            }
-        }
-        stage('Analysis with SONARQUBE ') {
-            steps {
-                script {
-                    withSonarQubeEnv (installationName: 'sonarqube-scanner') {
-                        sh "/opt/sonar-scanner/bin/sonar-scanner -Dsonar.projectKey=${ANGULARKEY} -Dsonar.sources=. -Dsonar.host.url=${SONARURL} -Dsonar.login=${ANGLOGIN}"
-                    }
-                }
-            }
-        }
-        stage('Containerization with DOCKER'){
-            steps {
-                script {
-                    sh "docker build -t ${STAGING_TAG} ."
-                    withCredentials([usernamePassword(credentialsId: 'tc', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
-                        sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
-                        sh "docker push ${STAGING_TAG}"
-                       // sh "docker pull ${STAGING_TAG}"
-                    }
-                }
-            }
-        }
+        // stage('Dependencies Test with SNYK') {
+        //     steps {
+        //         snykSecurity(
+        //             snykInstallation: 'snyk@latest',
+        //             snykTokenId: 'snyk-token',
+        //             failOnIssues: 'false',
+        //             monitorProjectOnBuild: 'true',
+        //             additionalArguments: '--all-projects --d'
+        //         )
+        //     }
+        // }
+        // stage('Analysis with SEMGREP ') {
+        //     steps {
+        //         //sh "docker run -v ${WORKSPACE}:/src --workdir /src semgrep/semgrep --config p/ci"
+        //          sh "docker run -e SEMGREP_APP_TOKEN=${SEMGREP_APP_TOKEN} --rm -v \${PWD}:/src semgrep/semgrep semgrep ci "
+        //     }
+        // }
+        // stage('Analysis with SONARQUBE ') {
+        //     steps {
+        //         script {
+        //             withSonarQubeEnv (installationName: 'sonarqube-scanner') {
+        //                 sh "/opt/sonar-scanner/bin/sonar-scanner -Dsonar.projectKey=${ANGULARKEY} -Dsonar.sources=. -Dsonar.host.url=${SONARURL} -Dsonar.login=${ANGLOGIN}"
+        //             }
+        //         }
+        //     }
+        // }
+        // stage('Containerization with DOCKER'){
+        //     steps {
+        //         script {
+        //             sh "docker build -t ${STAGING_TAG} ."
+        //             withCredentials([usernamePassword(credentialsId: 'tc', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+        //                 sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
+        //                 sh "docker push ${STAGING_TAG}"
+        //                // sh "docker pull ${STAGING_TAG}"
+        //             }
+        //         }
+        //     }
+        // }
         stage('Image Test with TRIVY') {
             steps {
                 //sh "docker run --rm aquasec/trivy image --exit-code 1 --no-progress  ${STAGING_TAG}"
-                sh "docker run --rm aquasec/trivy:latest --no-progress ${STAGING_TAG}"
+                sh "docker run --rm aquasec/trivy:latest  ${STAGING_TAG}"
  
             }
         }

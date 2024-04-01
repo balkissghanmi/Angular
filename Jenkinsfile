@@ -25,15 +25,10 @@ pipeline {
                 sh 'npm run build'
                 // sh 'ng test --no-watch --no-progress --browsers=ChromeHeadless'
                 //sh' npx karma start karma.conf.js --single-run'
+                //sh 'npm install karma karma-jasmine jasmine-core karma-chrome-launcher --save-dev'
+                //sh 'npm test'
             }
         }
-         stage('Run Karma Tests') {
-            steps {
-                 sh 'npm install karma karma-jasmine jasmine-core karma-chrome-launcher --save-dev'
-                 sh 'npm test'
-                 }
-                                }       
-
         stage('Dependencies Test with SNYK') {
             steps {
                 snykSecurity(

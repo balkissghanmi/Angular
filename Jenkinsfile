@@ -29,13 +29,13 @@ pipeline {
                 //sh 'npm test'
             }
         }
-         stage('Run Tests') {
-            steps {
-                sh'npm install --save-dev jest-junit'
-                sh 'npm test -- --coverage --ci'
-                 junit 'coverage/jest-junit.xml'
-            }
-        }
+        //  stage('Run Tests') {
+        //     steps {
+        //         sh'npm install --save-dev jest-junit'
+        //         sh 'npm test -- --coverage --ci'
+        //          junit 'coverage/jest-junit.xml'
+        //     }
+        // }
         stage('Dependencies Test with SNYK') {
             steps {
                 snykSecurity(

@@ -105,19 +105,13 @@ pipeline {
         //         sh "docker run -t  owasp/zap2docker-stable zap-baseline.py -t  http://192.168.56.7:80/ || true"
         //     }
         // }
-        stage('OWASP ZAP Test') {
-            steps {
-                script {
-                    def zapResult = sh(
-                        script: "docker run -t owasp/zap2docker-stable zap-baseline.py -t http://192.168.56.7:80/ || true",
-                        returnStdout: true
-                    ).trim()
-
-                    writeFile file: 'zap-report.html', text: zapResult
-                }
-            }
+  stage('OWASP ZAP Test') {
+    steps {
+        script {
+            sh "docker run -t owasp/zap2docker-stable zap-baseline.py -t http://192.168.56.7:80/ -J '-r zap-report.html' || true"
         }
     }
+}
 
     post {
         always {

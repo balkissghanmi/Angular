@@ -106,31 +106,32 @@ pipeline {
         //     }
         // }
         stage('OWASP ZAP Test') {
-    steps {
-        script {
-            def zapResult = sh(
-                script: "docker run -t owasp/zap2docker-stable zap-baseline.py -t http://192.168.56.7:80/ || true",
-                returnStdout: true
-            ).trim()
+            steps {
+                script {
+                    def zapResult = sh(
+                        script: "docker run -t owasp/zap2docker-stable zap-baseline.py -t http://192.168.56.7:80/ || true",
+                        returnStdout: true
+                    ).trim()
 
-            writeFile file: 'zap-report.html', text: zapResult
+                    writeFile file: 'zap-report.html', text: zapResult
+                }
+            }
         }
     }
-}
 
-stage('Publish OWASP ZAP Report') {
-    steps {
-        publishHTML([
-            allowMissing: false,
-            alwaysLinkToLastBuild: false,
-            keepAll: true,
-            reportDir: '',
-            reportFiles: 'zap-report.html',
-            reportName: 'OWASP ZAP Report',
-            reportTitles: 'OWASP ZAP Report'
-        ])
-    }
-}
+    post {
+        always {
+            publishHTML([
+                allowMissing: false,
+                alwaysLinkToLastBuild: false,
+                keepAll: true,
+                reportDir: '',
+                reportFiles: 'zap-report.html',
+                reportName: 'OWASP ZAP Report',
+                reportTitles: 'OWASP ZAP Report'
+            ])
+        }
+   
 
     }
 }

@@ -125,7 +125,7 @@ pipeline {
                 reportTitles: 'OWASP ZAP Report'
             ])
         }
-   
+    }
 
     }
 }

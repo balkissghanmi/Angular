@@ -36,28 +36,46 @@
 </head>
 <body>
     <h1>OWASP ZAP Test Report</h1>
+
+    <!-- PASS vulnerabilities -->
+    <h2>PASS</h2>
     <table>
         <tr>
-            <th>Result</th>
             <th>Description</th>
+            <th>Reference</th>
+        </tr>
+        <tr>
+            <td>Vulnerable JS Library (Powered by Retire.js)</td>
+            <td>10003</td>
+        </tr>
+        <!-- Add more rows for other PASS vulnerabilities -->
+    </table>
+
+    <!-- WARN vulnerabilities -->
+    <h2>WARN</h2>
+    <table>
+        <tr>
+            <th>Description</th>
+            <th>Reference</th>
             <th>URL</th>
         </tr>
-        <!-- Insert each vulnerability as a table row -->
         <tr>
-            <td class="pass">PASS</td>
-            <td>Vulnerable JS Library (Powered by Retire.js) [10003]</td>
-            <td></td>
+            <td>Missing Anti-clickjacking Header</td>
+            <td>10020</td>
+            <td>http://192.168.56.7:80/</td>
         </tr>
-        <!-- Repeat for other PASS results -->
-        <!-- WARN results -->
+        <!-- Add more rows for other WARN vulnerabilities -->
+    </table>
+
+    <!-- FAIL vulnerabilities -->
+    <h2>FAIL</h2>
+    <table>
         <tr>
-            <td class="warn">WARN</td>
-            <td>Missing Anti-clickjacking Header [10020]</td>
-            <td>http://192.168.56.7:80/ (200 OK)</td>
+            <th>Description</th>
+            <th>Reference</th>
+            <th>URL</th>
         </tr>
-        <!-- Repeat for other WARN results -->
-        <!-- FAIL results -->
-        <!-- End of results -->
+        <!-- Add rows for FAIL vulnerabilities -->
     </table>
 </body>
 </html>

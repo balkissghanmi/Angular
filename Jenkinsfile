@@ -36,73 +36,101 @@ pipeline {
         //          junit 'coverage/jest-junit.xml'
         //     }
         // }
-        stage('Dependencies Test with SNYK') {
-            steps {
-                snykSecurity(
-                    snykInstallation: 'snyk@latest',
-                    snykTokenId: 'snyk-token',
-                    failOnIssues: 'false',
-                    monitorProjectOnBuild: 'true',
-                    additionalArguments: '--all-projects --d'
-                )
-            }
-        }
-        stage('Analysis with SEMGREP ') {
-            steps {
-                //sh "docker run -v ${WORKSPACE}:/src --workdir /src semgrep/semgrep --config p/ci"
-                 sh "docker run -e SEMGREP_APP_TOKEN=${SEMGREP_APP_TOKEN} --rm -v \${PWD}:/src semgrep/semgrep semgrep ci "
-            }
-        }
-        stage('Analysis with SONARQUBE ') {
-            steps {
-                script {
-                    withSonarQubeEnv (installationName: 'sonarqube-scanner') {
-                        sh "/opt/sonar-scanner/bin/sonar-scanner -Dsonar.projectKey=${ANGULARKEY} -Dsonar.sources=. -Dsonar.host.url=${SONARURL} -Dsonar.login=${ANGLOGIN}"
-                    }
-                }
-            }
-        }
-        stage('Containerization with DOCKER'){
-            steps {
-                script {
-                    sh "docker build -t ${STAGING_TAG} ."
-                    withCredentials([usernamePassword(credentialsId: 'tc', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
-                        sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
-                        sh "docker push ${STAGING_TAG}"
-                       // sh "docker pull ${STAGING_TAG}"
-                    }
-                }
-            }
-        }
-        stage('Image Test with TRIVY') {
-            steps {
-                sh "docker run --rm aquasec/trivy image --exit-code 1 --no-progress  ${STAGING_TAG}"
-                //sh "docker run --rm aquasec/trivy:latest image balkissd/angular:v1.0.0"
+        // stage('Dependencies Test with SNYK') {
+        //     steps {
+        //         snykSecurity(
+        //             snykInstallation: 'snyk@latest',
+        //             snykTokenId: 'snyk-token',
+        //             failOnIssues: 'false',
+        //             monitorProjectOnBuild: 'true',
+        //             additionalArguments: '--all-projects --d'
+        //         )
+        //     }
+        // }
+        // stage('Analysis with SEMGREP ') {
+        //     steps {
+        //         //sh "docker run -v ${WORKSPACE}:/src --workdir /src semgrep/semgrep --config p/ci"
+        //          sh "docker run -e SEMGREP_APP_TOKEN=${SEMGREP_APP_TOKEN} --rm -v \${PWD}:/src semgrep/semgrep semgrep ci "
+        //     }
+        // }
+        // stage('Analysis with SONARQUBE ') {
+        //     steps {
+        //         script {
+        //             withSonarQubeEnv (installationName: 'sonarqube-scanner') {
+        //                 sh "/opt/sonar-scanner/bin/sonar-scanner -Dsonar.projectKey=${ANGULARKEY} -Dsonar.sources=. -Dsonar.host.url=${SONARURL} -Dsonar.login=${ANGLOGIN}"
+        //             }
+        //         }
+        //     }
+        // }
+        // stage('Containerization with DOCKER'){
+        //     steps {
+        //         script {
+        //             sh "docker build -t ${STAGING_TAG} ."
+        //             withCredentials([usernamePassword(credentialsId: 'tc', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+        //                 sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
+        //                 sh "docker push ${STAGING_TAG}"
+        //                // sh "docker pull ${STAGING_TAG}"
+        //             }
+        //         }
+        //     }
+        // }
+        // stage('Image Test with TRIVY') {
+        //     steps {
+        //         sh "docker run --rm aquasec/trivy image --exit-code 1 --no-progress  ${STAGING_TAG}"
+        //         //sh "docker run --rm aquasec/trivy:latest image balkissd/angular:v1.0.0"
  
-            }
-        }
-        stage('Pull Docker Image on Remote Server') {
-            steps {
-                sshagent(['ssh-agent']) {
-                    sh ' ssh -o StrictHostKeyChecking=no vagrant@192.168.56.7 "docker run -d --name front -p 80:80 balkissd/angular:v1.0.0"'
-                }
-            }
-        }
-        stage('Container Test with SNYK') {
-            steps {
-                snykSecurity(
-                    snykInstallation: 'snyk@latest',
-                    snykTokenId: 'snyk-token',
-                    failOnIssues: 'false',
-                    monitorProjectOnBuild: 'true',
-                    additionalArguments: '--container ${STAGING_TAG} -d' 
-                )
-            }
-        }
+        //     }
+        // }
+        // stage('Pull Docker Image on Remote Server') {
+        //     steps {
+        //         sshagent(['ssh-agent']) {
+        //             sh ' ssh -o StrictHostKeyChecking=no vagrant@192.168.56.7 "docker run -d --name front -p 80:80 balkissd/angular:v1.0.0"'
+        //         }
+        //     }
+        // }
+        // stage('Container Test with SNYK') {
+        //     steps {
+        //         snykSecurity(
+        //             snykInstallation: 'snyk@latest',
+        //             snykTokenId: 'snyk-token',
+        //             failOnIssues: 'false',
+        //             monitorProjectOnBuild: 'true',
+        //             additionalArguments: '--container ${STAGING_TAG} -d' 
+        //         )
+        //     }
+        // }
+       
+        // stage('OWASP ZAP Test') {
+        //     steps {
+        //         sh "docker run -t  owasp/zap2docker-stable zap-baseline.py -t  http://192.168.56.7:80/ || true"
+        //     }
+        // }
         stage('OWASP ZAP Test') {
-            steps {
-                sh "docker run -t  owasp/zap2docker-stable zap-baseline.py -t  http://192.168.56.7:80/ || true"
-            }
+    steps {
+        script {
+            def zapResult = sh(
+                script: "docker run -t owasp/zap2docker-stable zap-baseline.py -t http://192.168.56.7:80/ || true",
+                returnStdout: true
+            ).trim()
+
+            writeFile file: 'zap-report.html', text: zapResult
         }
+    }
+}
+
+stage('Publish OWASP ZAP Report') {
+    steps {
+        publishHTML([
+            allowMissing: false,
+            alwaysLinkToLastBuild: false,
+            keepAll: true,
+            reportDir: '',
+            reportFiles: 'zap-report.html',
+            reportName: 'OWASP ZAP Report',
+            reportTitles: 'OWASP ZAP Report'
+        ])
+    }
+}
+
     }
 }

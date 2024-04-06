@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OWASP ZAP Test Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .pass {
+            color: green;
+        }
+        .warn {
+            color: orange;
+        }
+        .fail {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>OWASP ZAP Test Report</h1>
+    <table>
+        <tr>
+            <th>Result</th>
+            <th>Description</th>
+            <th>URL</th>
+        </tr>
+        <!-- Insert each vulnerability as a table row -->
+        <tr>
+            <td class="pass">PASS</td>
+            <td>Vulnerable JS Library (Powered by Retire.js) [10003]</td>
+            <td></td>
+        </tr>
+        <!-- Repeat for other PASS results -->
+        <!-- WARN results -->
+        <tr>
+            <td class="warn">WARN</td>
+            <td>Missing Anti-clickjacking Header [10020]</td>
+            <td>http://192.168.56.7:80/ (200 OK)</td>
+        </tr>
+        <!-- Repeat for other WARN results -->
+        <!-- FAIL results -->
+        <!-- End of results -->
+    </table>
+</body>
+</html>

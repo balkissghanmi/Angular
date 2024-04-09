@@ -81,13 +81,13 @@ pipeline {
  
         //     }
         // }
-        // stage('Pull Docker Image on Remote Server') {
-        //     steps {
-        //         sshagent(['ssh-agent']) {
-        //             sh ' ssh -o StrictHostKeyChecking=no vagrant@192.168.56.7 "docker run -d --name front -p 80:80 balkissd/angular:v1.0.0"'
-        //         }
-        //     }
-        // }
+        stage('Pull Docker Image on Remote Server') {
+            steps {
+                sshagent(['ssh-agent']) {
+                    sh ' ssh -o StrictHostKeyChecking=no vagrant@192.168.56.7 "docker run -d --name front -p 80:80 balkissd/angular:v1.0.0"'
+                }
+            }
+        }
         // stage('Container Test with SNYK') {
         //     steps {
         //         snykSecurity(

@@ -114,17 +114,17 @@ stage('OWASP ZAP Scan') {
                     
                     // Perform a ZAP spider scan
                     zap.inside {
-                        sh 'zap-cli --zap-url http://localhost -p 8090 spider -r http://your-target-app-url.com'
+                        sh 'zap-cli --zap-url 192.168.56.3 -p 8090 spider -r http://192.168.56.7:80/ '
                     }
                     
                     // Perform an active scan
                     zap.inside {
-                        sh 'zap-cli --zap-url http://localhost -p 8090 active-scan -r http://your-target-app-url.com'
+                        sh 'zap-cli --zap-url 192.168.56.3 -p 8090 active-scan -r http://192.168.56.7:80/ '
                     }
                     
                     // Generate ZAP report
                     zap.inside {
-                        sh 'zap-cli --zap-url http://localhost -p 8090 report -o zap-report.html -f html'
+                        sh 'zap-cli --zap-url 192.168.56.3 -p 8090 report -o zap-report.html -f html'
                     }
                     
                     // Archive the ZAP report

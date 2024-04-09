@@ -106,57 +106,33 @@ pipeline {
         //     }
         // }
  
- stage('OWASP ZAP Scan') {
+stage('OWASP ZAP Scan') {
             steps {
                 script {
-                    // Start OWASP ZAP
-                    def zap = zap(
-                        zapHome: '/opt/ZAP_2.14.0', // Path to OWASP ZAP installation directory
-                        targetUrl: 'http://192.168.56.7:80',
-                        maxDepth: 5,
-                        zapHost: 'localhost',
-                        zapPort: 8090,
-                        apikey: ''
-                    )
-
-                    // Perform Spidering
-                    zap.spider()
-
-                    // Wait for the spider to finish
-                    def spiderStatus = zap.waitForSpider(60000)
-
-                    if (spiderStatus == 'ERROR') {
-                        error 'Spidering failed'
+                    // Start the ZAP Docker container
+                    def zap = docker.image('owasp/zap2docker-stable').run('-t', 'http://192.168.56.7:80/ ')
+                    
+                    // Perform a ZAP spider scan
+                    zap.inside {
+                        sh 'zap-cli --zap-url http://localhost -p 8090 spider -r http://your-target-app-url.com'
                     }
-
-                    // Perform Active Scan
-                    zap.activeScan()
-
-                    // Wait for the active scan to finish
-                    def scanStatus = zap.waitForActiveScan(60000)
-
-                    if (scanStatus == 'ERROR') {
-                        error 'Active scan failed'
+                    
+                    // Perform an active scan
+                    zap.inside {
+                        sh 'zap-cli --zap-url http://localhost -p 8090 active-scan -r http://your-target-app-url.com'
                     }
-
-                    // Generate HTML Report
-                    zap.report(format: 'html', outFile: 'zap-report.html')
+                    
+                    // Generate ZAP report
+                    zap.inside {
+                        sh 'zap-cli --zap-url http://localhost -p 8090 report -o zap-report.html -f html'
+                    }
+                    
+                    // Archive the ZAP report
+                    archiveArtifacts artifacts: 'zap-report.html', onlyIfSuccessful: true
                 }
             }
         }
-    }
 
-    post {
-        always {
-            publishHTML([
-                allowMissing: false,
-                alwaysLinkToLastBuild: false,
-                keepAll: true,
-                reportDir: '',
-                reportFiles: 'zap-report.html',
-                reportName: 'OWASP ZAP Report',
-                reportTitles: 'OWASP ZAP Report'
-            ])
-        }
+   
     }
 }

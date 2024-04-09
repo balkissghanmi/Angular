@@ -108,23 +108,52 @@ pipeline {
  
  stage('OWASP ZAP Scan') {
             steps {
-                owaspZap(
-                    zapHome: '/opt/ZAP_2.14.0', // Path to ZAP installation directory
-                    targetURL: ' http://192.168.56.7:80', // Target URL to scan
-                    contextName: 'zap' // Context name for the scan
-                )
+                script {
+                    // Start OWASP ZAP
+                    def zap = zap(
+                        zapHome: '/opt/ZAP_2.14.0', // Path to OWASP ZAP installation directory
+                        targetUrl: 'http://192.168.56.7:80',
+                        maxDepth: 5,
+                        zapHost: '192.168.56.3',
+                        zapPort: 8090,
+                        apikey: ''
+                    )
+
+                    // Perform Spidering
+                    zap.spider()
+
+                    // Wait for the spider to finish
+                    def spiderStatus = zap.waitForSpider(60000)
+
+                    if (spiderStatus == 'ERROR') {
+                        error 'Spidering failed'
+                    }
+
+                    // Perform Active Scan
+                    zap.activeScan()
+
+                    // Wait for the active scan to finish
+                    def scanStatus = zap.waitForActiveScan(60000)
+
+                    if (scanStatus == 'ERROR') {
+                        error 'Active scan failed'
+                    }
+
+                    // Generate HTML Report
+                    zap.report(format: 'html', outFile: 'zap-report.html')
+                }
             }
         }
     }
 
-   post {
+    post {
         always {
             publishHTML([
                 allowMissing: false,
                 alwaysLinkToLastBuild: false,
                 keepAll: true,
-                reportDir: 'reports',
-                reportFiles: 'owasp-zap-report.html',
+                reportDir: '',
+                reportFiles: 'zap-report.html',
                 reportName: 'OWASP ZAP Report',
                 reportTitles: 'OWASP ZAP Report'
             ])

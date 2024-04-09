@@ -100,38 +100,13 @@ pipeline {
         //     }
         // }
        
-        // stage('OWASP ZAP Test') {
-        //     steps {
-        //         sh "docker run -t  owasp/zap2docker-stable zap-baseline.py -t  http://192.168.56.7:80/ || true"
-        //     }
-        // }
- 
-stage('OWASP ZAP Scan') {
+        stage('OWASP ZAP Test') {
             steps {
-                script {
-                    // Start the ZAP Docker container
-                    def zap = docker.image('owasp/zap2docker-stable').run('-t', 'http://192.168.56.7:80/ ')
-                    
-                    // Perform a ZAP spider scan
-                    zap.inside {
-                        sh 'zap-cli --zap-url http://localhost -p 8090 spider -r http://192.168.56.7:80/ '
-                    }
-                    
-                    // Perform an active scan
-                    zap.inside {
-                        sh 'zap-cli --zap-url http://localhost -p 8090 active-scan -r http://192.168.56.7:80/'
-                    }
-                    
-                    // Generate ZAP report
-                    zap.inside {
-                        sh 'zap-cli --zap-url http://localhost -p 8090 report -o zap-report.html -f html'
-                    }
-                    
-                    // Archive the ZAP report
-                    archiveArtifacts artifacts: 'zap-report.html', onlyIfSuccessful: true
-                }
+                sh "docker run -t  owasp/zap2docker-stable zap-baseline.py -t  http://192.168.56.7:80/ || true"
             }
         }
+ 
+
 
    
     }

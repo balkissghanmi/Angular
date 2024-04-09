@@ -114,7 +114,7 @@ pipeline {
                         zapHome: '/opt/ZAP_2.14.0', // Path to OWASP ZAP installation directory
                         targetUrl: 'http://192.168.56.7:80',
                         maxDepth: 5,
-                        zapHost: '192.168.56.3',
+                        zapHost: 'localhost',
                         zapPort: 8090,
                         apikey: ''
                     )

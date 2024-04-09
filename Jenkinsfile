@@ -106,11 +106,13 @@ pipeline {
         //     }
         // }
  
-stage('OWASP ZAP Test') {
+ stage('OWASP ZAP Scan') {
             steps {
-                script {
-                    sh "docker run -t owasp/zap2docker-stable zap-baseline.py -t http://192.168.56.7:80/ -J '-r zap-report.html' || true"
-                }
+                owaspZap(
+                    zapHome: '/opt/ZAP_2.14.0', // Path to ZAP installation directory
+                    targetURL: ' http://192.168.56.7:80', // Target URL to scan
+                    contextName: 'zap' // Context name for the scan
+                )
             }
         }
     }
@@ -121,8 +123,8 @@ stage('OWASP ZAP Test') {
                 allowMissing: false,
                 alwaysLinkToLastBuild: false,
                 keepAll: true,
-                reportDir: '',
-                reportFiles: 'zap-report.html',
+                reportDir: 'reports',
+                reportFiles: 'owasp-zap-report.html',
                 reportName: 'OWASP ZAP Report',
                 reportTitles: 'OWASP ZAP Report'
             ])

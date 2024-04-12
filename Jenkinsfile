@@ -190,6 +190,4 @@ stage('Initialization') {
             }
         }
     }
-   
     }
-}

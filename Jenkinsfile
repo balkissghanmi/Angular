@@ -145,33 +145,28 @@ stage('Initialization') {
                 script {
                     scan_type = "${params.SCAN_TYPE}"
                     target = "${params.TARGET}"
-                    if (scan_type == 'Baseline') {
-                        sh """
-                            docker exec owasp \
-                            zap-baseline.py \
-                            -t $target \
-                            -r report.html \
-                            -I
-                        """
-                    } else if (scan_type == 'APIS') {
-                        sh """
-                            docker exec owasp \
-                            zap-api-scan.py \
-                            -t $target \
-                            -r report.html \
-                            -I
-                        """
-                    } else if (scan_type == 'Full') {
-                        sh """
-                            docker exec owasp \
-                            zap-full-scan.py \
-                            -t $target \
-                            -r report.html \
-                            -I
-                        """
-                    } else {
-                        echo 'Something went wrong...'
+                    def zap_command
+                    switch (scan_type) {
+                        case 'Baseline':
+                            zap_command = 'zap-baseline.py'
+                            break
+                        case 'APIS':
+                            zap_command = 'zap-api-scan.py'
+                            break
+                        case 'Full':
+                            zap_command = 'zap-full-scan.py'
+                            break
+                        default:
+                            echo 'Invalid scan type'
+                            return
                     }
+                    sh """
+                        docker exec owasp \\
+                        ${zap_command} \\
+                        -t $target \\
+                        -r /zap/wrk/report.html \\
+                        -I
+                    """
                 }
             }
         }
@@ -184,7 +179,17 @@ stage('Initialization') {
                 }
             }
         }
-
+        stage('Emailing the Report') {
+            steps {
+                emailext(
+                    to: 'recipient@example.com',
+                    subject: 'OWASP ZAP Report',
+                    body: 'Please find the attached OWASP ZAP scan report.',
+                    attachmentsPattern: '${WORKSPACE}/report.html'
+                )
+            }
+        }
+    }
    
     }
 }

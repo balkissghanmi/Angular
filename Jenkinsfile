@@ -105,59 +105,85 @@ pipeline {
         //         sh "docker run -t  owasp/zap2docker-stable zap-baseline.py -t  http://192.168.56.7:80/ || true"
         //     }
         // }
-  stage('OWASP ZAP Scan') {
+stage('Initialization') {
             steps {
                 script {
-                    // Start OWASP ZAP
-                    def zap = zap(
-                        zapHome: '/opt/ZAP_2.14.0', // Path to OWASP ZAP installation directory
-                        targetUrl: 'http://192.168.56.7:80',
-                        maxDepth: 5,
-                        zapHost: '192.168.56.3',
-                        zapPort: 5555,
-                        apikey: ''
-                    )
+                    parameters {
+                        choice choices: ['Baseline', 'APIS', 'Full'],
+                                description: 'Type of scan that is going to perform inside the container',
+                                name: 'SCAN_TYPE'
 
-                    // Perform Spidering
-                    zap.spider()
+                        string defaultValue: 'http://192.168.56.7:80',
+                                description: 'Target URL to scan',
+                                name: 'TARGET'
 
-                    // Wait for the spider to finish
-                    def spiderStatus = zap.waitForSpider(60000)
-
-                    if (spiderStatus == 'ERROR') {
-                        error 'Spidering failed'
+                        booleanParam defaultValue: true,
+                                description: 'Parameter to know if you want to generate a report.',
+                                name: 'GENERATE_REPORT'
                     }
-
-                    // Perform Active Scan
-                    zap.activeScan()
-
-                    // Wait for the active scan to finish
-                    def scanStatus = zap.waitForActiveScan(60000)
-
-                    if (scanStatus == 'ERROR') {
-                        error 'Active scan failed'
-                    }
-
-                    // Generate HTML Report
-                    zap.report(format: 'html', outFile: 'zap-report.html')
                 }
             }
         }
-    }
-
-    post {
-        always {
-            publishHTML([
-                allowMissing: false,
-                alwaysLinkToLastBuild: false,
-                keepAll: true,
-                reportDir: '',
-                reportFiles: 'zap-report.html',
-                reportName: 'OWASP ZAP Report',
-                reportTitles: 'OWASP ZAP Report'
-            ])
+        stage('Setting up OWASP ZAP Docker Container') {
+            steps {
+                sh 'docker pull owasp/zap2docker-stable:latest'
+                sh 'docker run -dt --name owasp owasp/zap2docker-stable /bin/bash'
+            }
         }
-    
+        stage('Preparing the Working Directory') {
+            when {
+                expression {
+                    params.GENERATE_REPORT
+                }
+            }
+            steps {
+                sh 'docker exec owasp mkdir /zap/wrk'
+            }
+        }
+        stage('Scanning the Target on the OWASP Container') {
+            steps {
+                script {
+                    scan_type = "${params.SCAN_TYPE}"
+                    target = "${params.TARGET}"
+                    if (scan_type == 'Baseline') {
+                        sh """
+                            docker exec owasp \
+                            zap-baseline.py \
+                            -t $target \
+                            -r report.html \
+                            -I
+                        """
+                    } else if (scan_type == 'APIS') {
+                        sh """
+                            docker exec owasp \
+                            zap-api-scan.py \
+                            -t $target \
+                            -r report.html \
+                            -I
+                        """
+                    } else if (scan_type == 'Full') {
+                        sh """
+                            docker exec owasp \
+                            zap-full-scan.py \
+                            -t $target \
+                            -r report.html \
+                            -I
+                        """
+                    } else {
+                        echo 'Something went wrong...'
+                    }
+                }
+            }
+        }
+        stage('Copying the Report to Workspace') {
+            steps {
+                script {
+                    sh '''
+                        docker cp owasp:/zap/wrk/report.html ${WORKSPACE}/report.html
+                    '''
+                }
+            }
+        }
 
    
     }

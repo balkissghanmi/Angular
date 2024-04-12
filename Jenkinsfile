@@ -113,7 +113,7 @@ stage('Initialization') {
                                 description: 'Type of scan that is going to perform inside the container',
                                 name: 'SCAN_TYPE'
 
-                        string defaultValue: 'http://192.168.56.7:80',
+                        string defaultValue: 'http://192.168.56.7:80/',
                                 description: 'Target URL to scan',
                                 name: 'TARGET'
 
@@ -124,65 +124,64 @@ stage('Initialization') {
                 }
             }
         }
-        stage('Setting up OWASP ZAP Docker Container') {
+ stage('Setting up OWASP ZAP Docker Container') {
             steps {
                 sh 'docker pull owasp/zap2docker-stable:latest'
                 sh 'docker run -dt --name owasp owasp/zap2docker-stable /bin/bash'
             }
         }
         stage('Preparing the Working Directory') {
-            when {
-                expression {
-                    params.GENERATE_REPORT
-                }
-            }
             steps {
                 sh 'docker exec owasp mkdir /zap/wrk'
             }
         }
         stage('Scanning the Target on the OWASP Container') {
-    steps {
-        script {
-            scan_type = "${params.SCAN_TYPE}"
-            echo "Scan type: ${scan_type}"
-            target = "${params.TARGET}"
-            def zap_command
-            switch (scan_type) {
-                case 'Baseline':
-                    zap_command = 'zap-baseline.py'
-                    break
-                case 'APIS':
-                    zap_command = 'zap-api-scan.py'
-                    break
-                case 'Full':
-                    zap_command = 'zap-full-scan.py'
-                    break
-                default:
-                    echo 'Invalid scan type'
-                    return
+            steps {
+                script {
+                    scan_type = "${params.SCAN_TYPE}"
+                    if (scan_type == null) {
+                        echo 'Scan type is not specified'
+                        return
+                    }
+                    echo "Scan type: ${scan_type}"
+                    target = "${params.TARGET}"
+                    def zap_command
+                    switch (scan_type) {
+                        case 'Baseline':
+                            zap_command = 'zap-baseline.py'
+                            break
+                        case 'APIS':
+                            zap_command = 'zap-api-scan.py'
+                            break
+                        case 'Full':
+                            zap_command = 'zap-full-scan.py'
+                            break
+                        default:
+                            echo 'Invalid scan type'
+                            return
+                    }
+                    sh """
+                        docker exec owasp \\
+                        ${zap_command} \\
+                        -t $target \\
+                        -r /zap/wrk/report.html \\
+                        -I
+                    """
+                }
             }
-            sh """
-                docker exec owasp \\
-                ${zap_command} \\
-                -t $target \\
-                -r /zap/wrk/report.html \\
-                -I
-            """
         }
-    }
-}
-stage('Copying the Report to Workspace') {
-    steps {
-        script {
-            sh '''
-                docker exec owasp ls /zap/wrk
-            '''
-            sh '''
-                docker cp owasp:/zap/wrk/report.html ${WORKSPACE}/report.html
-            '''
+        stage('Copying the Report to Workspace') {
+            steps {
+                script {
+                    sh '''
+                        docker exec owasp ls /zap/wrk
+                    '''
+                    sh '''
+                        docker cp owasp:/zap/wrk/report.html ${WORKSPACE}/report.html
+                    '''
+                }
+            }
         }
-    }
-}
 
    
     }

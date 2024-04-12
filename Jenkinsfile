@@ -100,64 +100,11 @@ pipeline {
         //     }
         // }
        
-        // stage('OWASP ZAP Test') {
-        //     steps {
-        //         sh "docker run -t  owasp/zap2docker-stable zap-baseline.py -t  http://192.168.56.7:80/ || true"
-        //     }
-        // }
-  stage('Setting up OWASP ZAP Docker Container') {
+        stage('OWASP ZAP Test') {
             steps {
-                sh 'docker pull owasp/zap2docker-stable:latest'
-                sh 'docker run -d --rm --name owasp owasp/zap2docker-stable sleep infinity'
+                sh "docker run -t  owasp/zap2docker-stable zap-baseline.py -t  http://192.168.56.7:80/ || true"
             }
         }
-        stage('Waiting for Container to Start') {
-            steps {
-                script {
-                    sh 'docker ps'
-                    sleep 10 // wait for container to start
-                }
-            }
-        }
-        stage('Preparing the Working Directory') {
-            steps {
-                script {
-                    try {
-                        sh 'docker exec owasp mkdir /zap/wrk'
-                    } catch (Exception e) {
-                        echo 'Failed to create working directory in OWASP ZAP container'
-                        currentBuild.result = 'ABORTED'
-                    }
-                }
-            }
-        }
-        stage('Scanning the Target on the OWASP Container') {
-            steps {
-                script {
-                    def target = "http://192.168.56.7:80/"
-                    sh """
-                        docker exec owasp \\
-                        zap-baseline.py \\
-                        -t $target \\
-                        -r /zap/wrk/report.html \\
-                        -I
-                    """
-                }
-            }
-        }
-        stage('Copying the Report to Workspace') {
-            steps {
-                script {
-                    try {
-                        sh '''
-                            docker cp owasp:/zap/wrk/report.html ${WORKSPACE}/report.html
-                        '''
-                    } catch (Exception e) {
-                        echo 'Failed to copy report from OWASP ZAP container'
-                        currentBuild.result = 'ABORTED'
-                    }
-                }
-            }
-        }
+ 
     }
     }

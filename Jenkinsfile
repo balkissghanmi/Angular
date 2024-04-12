@@ -105,7 +105,7 @@ pipeline {
         //         sh "docker run -t  owasp/zap2docker-stable zap-baseline.py -t  http://192.168.56.7:80/ || true"
         //     }
         // }
-stage('Initialization') {
+ stage('Initialization') {
             steps {
                 script {
                     parameters {
@@ -113,7 +113,7 @@ stage('Initialization') {
                                 description: 'Type of scan that is going to perform inside the container',
                                 name: 'SCAN_TYPE'
 
-                        string defaultValue: 'http://192.168.56.7:80/',
+                        string defaultValue: 'http://192.168.56.7:80/ ',
                                 description: 'Target URL to scan',
                                 name: 'TARGET'
 
@@ -124,10 +124,18 @@ stage('Initialization') {
                 }
             }
         }
- stage('Setting up OWASP ZAP Docker Container') {
+        stage('Setting up OWASP ZAP Docker Container') {
             steps {
                 sh 'docker pull owasp/zap2docker-stable:latest'
-                sh 'docker run -dt --name owasp owasp/zap2docker-stable /bin/bash'
+                sh 'docker run -d --rm --name owasp owasp/zap2docker-stable sleep infinity'
+            }
+        }
+        stage('Waiting for Container to Start') {
+            steps {
+                script {
+                    sh 'docker ps | grep owasp'
+                    sleep 10 // wait for container to start
+                }
             }
         }
         stage('Preparing the Working Directory') {
@@ -182,7 +190,6 @@ stage('Initialization') {
                 }
             }
         }
-
    
     }
     }

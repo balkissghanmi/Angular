@@ -105,26 +105,7 @@ pipeline {
         //         sh "docker run -t  owasp/zap2docker-stable zap-baseline.py -t  http://192.168.56.7:80/ || true"
         //     }
         // }
- stage('Initialization') {
-            steps {
-                script {
-                    parameters {
-                        choice choices: ['Baseline', 'APIS', 'Full'],
-                                description: 'Type of scan that is going to perform inside the container',
-                                name: 'SCAN_TYPE'
-
-                        string defaultValue: 'http://192.168.56.7:80/ ',
-                                description: 'Target URL to scan',
-                                name: 'TARGET'
-
-                        booleanParam defaultValue: true,
-                                description: 'Parameter to know if you want to generate a report.',
-                                name: 'GENERATE_REPORT'
-                    }
-                }
-            }
-        }
-        stage('Setting up OWASP ZAP Docker Container') {
+ stage('Setting up OWASP ZAP Docker Container') {
             steps {
                 sh 'docker pull owasp/zap2docker-stable:latest'
                 sh 'docker run -d --rm --name owasp owasp/zap2docker-stable sleep infinity'
@@ -133,7 +114,7 @@ pipeline {
         stage('Waiting for Container to Start') {
             steps {
                 script {
-                    sh 'docker ps | grep owasp'
+                    sh 'docker ps'
                     sleep 10 // wait for container to start
                 }
             }
@@ -146,31 +127,10 @@ pipeline {
         stage('Scanning the Target on the OWASP Container') {
             steps {
                 script {
-                    scan_type = "${params.SCAN_TYPE}"
-                    if (scan_type == null) {
-                        echo 'Scan type is not specified'
-                        return
-                    }
-                    echo "Scan type: ${scan_type}"
-                    target = "${params.TARGET}"
-                    def zap_command
-                    switch (scan_type) {
-                        case 'Baseline':
-                            zap_command = 'zap-baseline.py'
-                            break
-                        case 'APIS':
-                            zap_command = 'zap-api-scan.py'
-                            break
-                        case 'Full':
-                            zap_command = 'zap-full-scan.py'
-                            break
-                        default:
-                            echo 'Invalid scan type'
-                            return
-                    }
+                    def target = "http://192.168.56.7:80/"
                     sh """
                         docker exec owasp \\
-                        ${zap_command} \\
+                        zap-baseline.py \\
                         -t $target \\
                         -r /zap/wrk/report.html \\
                         -I
@@ -182,14 +142,10 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        docker exec owasp ls /zap/wrk
-                    '''
-                    sh '''
                         docker cp owasp:/zap/wrk/report.html ${WORKSPACE}/report.html
                     '''
                 }
             }
         }
-   
     }
     }

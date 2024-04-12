@@ -105,7 +105,7 @@ pipeline {
         //         sh "docker run -t  owasp/zap2docker-stable zap-baseline.py -t  http://192.168.56.7:80/ || true"
         //     }
         // }
- stage('Setting up OWASP ZAP Docker Container') {
+  stage('Setting up OWASP ZAP Docker Container') {
             steps {
                 sh 'docker pull owasp/zap2docker-stable:latest'
                 sh 'docker run -d --rm --name owasp owasp/zap2docker-stable sleep infinity'
@@ -121,7 +121,14 @@ pipeline {
         }
         stage('Preparing the Working Directory') {
             steps {
-                sh 'docker exec owasp mkdir /zap/wrk'
+                script {
+                    try {
+                        sh 'docker exec owasp mkdir /zap/wrk'
+                    } catch (Exception e) {
+                        echo 'Failed to create working directory in OWASP ZAP container'
+                        currentBuild.result = 'ABORTED'
+                    }
+                }
             }
         }
         stage('Scanning the Target on the OWASP Container') {
@@ -141,9 +148,14 @@ pipeline {
         stage('Copying the Report to Workspace') {
             steps {
                 script {
-                    sh '''
-                        docker cp owasp:/zap/wrk/report.html ${WORKSPACE}/report.html
-                    '''
+                    try {
+                        sh '''
+                            docker cp owasp:/zap/wrk/report.html ${WORKSPACE}/report.html
+                        '''
+                    } catch (Exception e) {
+                        echo 'Failed to copy report from OWASP ZAP container'
+                        currentBuild.result = 'ABORTED'
+                    }
                 }
             }
         }

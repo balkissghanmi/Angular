@@ -141,53 +141,49 @@ stage('Initialization') {
             }
         }
         stage('Scanning the Target on the OWASP Container') {
-            steps {
-                script {
-                    scan_type = "${params.SCAN_TYPE}"
-                    target = "${params.TARGET}"
-                    def zap_command
-                    switch (scan_type) {
-                        case 'Baseline':
-                            zap_command = 'zap-baseline.py'
-                            break
-                        case 'APIS':
-                            zap_command = 'zap-api-scan.py'
-                            break
-                        case 'Full':
-                            zap_command = 'zap-full-scan.py'
-                            break
-                        default:
-                            echo 'Invalid scan type'
-                            return
-                    }
-                    sh """
-                        docker exec owasp \\
-                        ${zap_command} \\
-                        -t $target \\
-                        -r /zap/wrk/report.html \\
-                        -I
-                    """
-                }
+    steps {
+        script {
+            scan_type = "${params.SCAN_TYPE}"
+            echo "Scan type: ${scan_type}"
+            target = "${params.TARGET}"
+            def zap_command
+            switch (scan_type) {
+                case 'Baseline':
+                    zap_command = 'zap-baseline.py'
+                    break
+                case 'APIS':
+                    zap_command = 'zap-api-scan.py'
+                    break
+                case 'Full':
+                    zap_command = 'zap-full-scan.py'
+                    break
+                default:
+                    echo 'Invalid scan type'
+                    return
             }
+            sh """
+                docker exec owasp \\
+                ${zap_command} \\
+                -t $target \\
+                -r /zap/wrk/report.html \\
+                -I
+            """
         }
-        stage('Copying the Report to Workspace') {
-            steps {
-                script {
-                    sh '''
-                        docker cp owasp:/zap/wrk/report.html ${WORKSPACE}/report.html
-                    '''
-                }
-            }
+    }
+}
+stage('Copying the Report to Workspace') {
+    steps {
+        script {
+            sh '''
+                docker exec owasp ls /zap/wrk
+            '''
+            sh '''
+                docker cp owasp:/zap/wrk/report.html ${WORKSPACE}/report.html
+            '''
         }
-        stage('Emailing the Report') {
-            steps {
-                emailext(
-                    to: 'recipient@example.com',
-                    subject: 'OWASP ZAP Report',
-                    body: 'Please find the attached OWASP ZAP scan report.',
-                    attachmentsPattern: '${WORKSPACE}/report.html'
-                )
-            }
-        }
+    }
+}
+
+   
     }
     }

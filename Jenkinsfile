@@ -105,18 +105,22 @@ pipeline {
         //         sh "docker run -t  owasp/zap2docker-stable zap-baseline.py -t  http://192.168.56.7:80/ || true"
         //     }
         // }
-
- stage('OWASP ZAP Full Scan') {
+stage('OWASP ZAP Full Scan') {
     steps {
         script {
-            // Ensure correct permissions for the /zap/wrk/ directory
-            sh "chmod -R 777 \$(pwd)/zap/wrk/"
+            // Create the directory if it doesn't exist
+            sh "mkdir -p /var/lib/jenkins/workspace/Front/zap/wrk/"
+
+            // Ensure correct permissions for the directory
+            sh "chmod -R 777 /var/lib/jenkins/workspace/Front/zap/wrk/"
 
             // Run the ZAP full scan
-            sh "docker run -v \$(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://192.168.56.7:80/ -g gen.conf -r testreport.html"
+            sh "docker run -v /var/lib/jenkins/workspace/Front:/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://192.168.56.7:80/ -g gen.conf -r testreport.html"
         }
     }
 }
+
+
 
 
 

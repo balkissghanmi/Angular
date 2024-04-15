@@ -114,11 +114,15 @@ stage('OWASP ZAP Full Scan') {
             // Ensure correct permissions for the directory
             sh "chmod -R 777 /var/lib/jenkins/workspace/Front/zap/wrk/"
 
+            // Create the gen.conf file in the writable directory
+            sh "touch /var/lib/jenkins/workspace/Front/zap/wrk/gen.conf"
+
             // Run the ZAP full scan
             sh "docker run -v /var/lib/jenkins/workspace/Front:/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://192.168.56.7:80/ -g gen.conf -r testreport.html"
         }
     }
 }
+
 
 
 

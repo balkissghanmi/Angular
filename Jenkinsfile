@@ -105,20 +105,13 @@ pipeline {
         //         sh "docker run -t  owasp/zap2docker-stable zap-baseline.py -t  http://192.168.56.7:80/ || true"
         //     }
         // }
-stage('OWASP ZAP Test') {
-    steps {
-      sh "docker run -t --rm -v $(pwd):/zap/wrk owasp/zap2docker-stable zap-baseline.py -t http://192.168.56.7:80/ -r baseline.json || true"
 
-
-    }
-}
-stage('Convert JSON to HTML') {
+    stage('OWASP ZAP Full Scan') {
     steps {
-        sh """
-            echo '<!DOCTYPE html><html><head><title>OWASP ZAP Baseline Report</title></head><body><pre>' > baseline.html
-            cat baseline.json >> baseline.html
-            echo '</pre></body></html>' >> baseline.html
-        """
+        script {
+          sh"docker run -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py \
+    -t http://192.168.56.7:80/ -g gen.conf -r testreport.html"
+        }
     }
 }
 

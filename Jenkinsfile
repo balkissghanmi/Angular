@@ -117,7 +117,7 @@ pipeline {
  stage('OWASP ZAP Test') {
             steps {
 sh" docker run -v \$(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
-    -t http://192.168.56.7:80/  -g gen.conf -r testreport.html "
+    -t http://192.168.56.7:80/  -r testreport.html "
                 }
         }
 

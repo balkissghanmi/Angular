@@ -110,10 +110,10 @@ pipeline {
     steps {
         script {
             // Ensure correct permissions for the /zap/wrk/ directory
-            sh "chmod -R 777 $(pwd)/zap/wrk/"
+            sh "chmod -R 777 \$(pwd)/zap/wrk/"
 
             // Run the ZAP full scan
-            sh "docker run -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://192.168.56.7:80/ -g gen.conf -r testreport.html"
+            sh "docker run -v \$(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://192.168.56.7:80/ -g gen.conf -r testreport.html"
         }
     }
 }

@@ -108,6 +108,7 @@ pipeline {
 stage('OWASP ZAP Full Scan') {
     steps {
         script {
+            sh " chmod u+w /zap/wrk/ "
            // sh"docker run -v /var/lib/jenkins/workspace/Front:/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable echo \$USER"
             sh "sudo docker run -v /var/lib/jenkins/workspace/Front:/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://192.168.56.7:80/ -r testreport.html"
             sh "  cp /zap/wrk/testreport.html ." 

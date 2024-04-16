@@ -105,27 +105,17 @@ pipeline {
         //         sh "docker run -t  owasp/zap2docker-stable zap-baseline.py -t  http://192.168.56.7:80/ || true"
         //     }
         // }
-// stage('OWASP ZAP Full Scan') {
-//     steps {
-//         script {
-//             // Run the ZAP full scan
-//             sh "docker run -v /var/lib/jenkins/workspace/Front:/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://192.168.56.7:80/ -g /zap/wrk/gen.conf -r testreport.html"
-//         }
-//     }
-// }
-
-//  stage('OWASP ZAP Test') {
-//             steps {
-// sh" docker run -v \$(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
-//     -t http://192.168.56.7:80/  -r testreport.html "
-//                 }
-//         }
-
-stage('OWASP ZAP Test') {
-            steps {
-sh"docker run -u jenkins -v /var/lib/jenkins/workspace/Front:/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://192.168.56.7:80/ -r testreport.html "
-            }
+stage('OWASP ZAP Full Scan') {
+    steps {
+        script {
+            // Run the ZAP full scan
+            sh "docker run -v /var/lib/jenkins/workspace/Front:/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://192.168.56.7:80/ -g /zap/wrk/gen.conf -r testreport.html"
+        }
+    }
 }
+
+
+
 
     }
     }

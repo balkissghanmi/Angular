@@ -114,19 +114,18 @@ pipeline {
 //     }
 // }
 
- stage('OWASP ZAP Test') {
-            steps {
-sh" docker run -v \$(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
-    -t http://192.168.56.7:80/  -r testreport.html "
-                }
-        }
+//  stage('OWASP ZAP Test') {
+//             steps {
+// sh" docker run -v \$(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+//     -t http://192.168.56.7:80/  -r testreport.html "
+//                 }
+//         }
 
-tage('OWASP ZAP Test') {
+stage('OWASP ZAP Test') {
             steps {
 sh"docker run -u jenkins -v /var/lib/jenkins/workspace/Front:/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://192.168.56.7:80/ -r testreport.html "
             }
 }
-
 
     }
     }

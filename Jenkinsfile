@@ -119,10 +119,22 @@ pipeline {
 
 stage('Run Nuclei') {
             steps {
-                sh "nuclei -u http://192.168.56.7:80 "
+                sh "nuclei -u http://192.168.56.7:80 -o nuclei-results.json "
+                sh "jq -r '.results[] | \"<tr><td>\(.severity)</td><td>\(.templateID)</td><td>\(.info)</td></tr>\"' nuclei-results.json > nuclei-results.html"
             }
         }
-
+stage('Publish HTML Report') {
+            steps {
+                publishHTML(target: [
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: '.',
+                    reportFiles: 'nuclei-results.html',
+                    reportName: 'Nuclei Scan Report'
+                ])
+            }
+        }
 
     }
     }

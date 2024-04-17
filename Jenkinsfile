@@ -119,7 +119,7 @@ pipeline {
 
 stage('Run Nuclei') {
             steps {
-                sh "nuclei -u http://192.168.56.3:80 "
+                sh "nuclei -u http://192.168.56.7:80 "
             }
         }
 

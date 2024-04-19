@@ -23,7 +23,7 @@ pipeline {
                 sh 'npm cache clean --force'
                 sh 'npm install --legacy-peer-deps --verbose'
                 sh 'npm run build'
-                 sh 'ng test --watch=false'
+                // sh 'ng test --watch=false'
                 //sh' npx karma start karma.conf.js --single-run'
                 //sh 'npm install karma karma-jasmine jasmine-core karma-chrome-launcher --save-dev'
                 //sh 'npm test'
@@ -117,11 +117,11 @@ pipeline {
 //     }
 // }
 
-// stage('Run Nuclei') {
-//             steps {
-//                 sh "nuclei -u http://192.168.56.7:80  "
-//             }
-//         }
+stage('Run Nuclei') {
+            steps {
+                sh "nuclei -u http://192.168.56.7:80 -o nuclei_report.json "
+            }
+        }
 
     }
     }

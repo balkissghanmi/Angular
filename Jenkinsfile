@@ -29,7 +29,7 @@ pipeline {
                 //sh 'npm install karma karma-jasmine jasmine-core karma-chrome-launcher --save-dev'
                 //sh 'npm test'
                 def appPath = "/var/lib/jenkins/workspace/Front"
-                docker.image('opensecurity/nodejsscan:latest').inside('-p 8099:8099') {
+                docker.image('opensecurity/nodejsscan:latest').inside('-p 8098:8099') {
                         sh 'nodejsscan -d ${appPath}'
                     }
             }

@@ -20,6 +20,7 @@ pipeline {
         }
         stage('NPM Build'){
             steps {
+                script {
                 sh 'npm cache clean --force'
                 sh 'npm install --legacy-peer-deps --verbose'
                 sh 'npm run build'
@@ -27,7 +28,12 @@ pipeline {
                 //sh' npx karma start karma.conf.js --single-run'
                 //sh 'npm install karma karma-jasmine jasmine-core karma-chrome-launcher --save-dev'
                 //sh 'npm test'
+                def appPath = "/var/lib/jenkins/workspace/Front"
+                docker.image('opensecurity/nodejsscan:latest').inside('-p 8099:8099') {
+                        sh 'nodejsscan -d ${appPath}'
+                    }
             }
+        }
         }
         //  stage('Run Tests') {
         //     steps {
@@ -105,28 +111,30 @@ pipeline {
         //         sh "docker run -t  owasp/zap2docker-stable zap-baseline.py -t  http://192.168.56.7:80/ || true"
         //     }
         // }
-stage('OWASP ZAP Full Scan') {
-    steps {
-        script {
-          // sh "sudo  mkdir -p /zap/wrk/ "
-           //sh"sudo  chmod u+w /zap/wrk/testreport.html "
-            //sh"docker run -v /var/lib/jenkins/workspace/Front:/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable echo \$USER"
-            //sh " sudo docker run -v /var/lib/jenkins/workspace/Front:/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://192.168.56.7:80/ -r testreport.html"
-        //sh "  docker run -v /var/lib/jenkins/workspace/Front:/zap/wrk/:rw --user root  -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://192.168.56.7:80/ touch testreport.html"
-       //  sh "  cp /zap/wrk/testreport.html ." 
-       //sh"  rm -rf /var/lib/jenkins/workspace/Front/report"
-       sh"mkdir -p /var/lib/jenkins/workspace/Front/report"
-      sh"chmod 777 /var/lib/jenkins/workspace/Front/report"
-      sh"sudo docker run -v /var/lib/jenkins/workspace/Front:/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://192.168.56.7:80/ -r report/testreport.html"
-        }
-    }
-}
+// stage('OWASP ZAP Full Scan') {
+//     steps {
+//         script {
+//           // sh "sudo  mkdir -p /zap/wrk/ "
+//            //sh"sudo  chmod u+w /zap/wrk/testreport.html "
+//             //sh"docker run -v /var/lib/jenkins/workspace/Front:/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable echo \$USER"
+//             //sh " sudo docker run -v /var/lib/jenkins/workspace/Front:/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://192.168.56.7:80/ -r testreport.html"
+//         //sh "  docker run -v /var/lib/jenkins/workspace/Front:/zap/wrk/:rw --user root  -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://192.168.56.7:80/ touch testreport.html"
+//        //  sh "  cp /zap/wrk/testreport.html ." 
+//        //sh"  rm -rf /var/lib/jenkins/workspace/Front/report"
 
-stage('Run Nuclei') {
-            steps {
-                sh "nuclei -u http://192.168.56.7:80 -o nuclei_report.json "
-            }
-        }
+
+//        sh"mkdir -p /var/lib/jenkins/workspace/Front/report"
+//       sh"chmod 777 /var/lib/jenkins/workspace/Front/report"
+//       sh"sudo docker run -v /var/lib/jenkins/workspace/Front:/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://192.168.56.7:80/ -r report/testreport.html"
+//         }
+//     }
+// }
+
+// stage('Run Nuclei') {
+//             steps {
+//                 sh "nuclei -u http://192.168.56.7:80 -o nuclei_report.json "
+//             }
+//         }
 
     }
     }

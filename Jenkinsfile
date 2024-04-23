@@ -30,7 +30,7 @@ pipeline {
                 //sh 'npm test'
                 def appPath = "/var/lib/jenkins/workspace/Front"
                 docker.image('opensecurity/nodejsscan:latest').inside('--privileged -u root:root') {
-                sh 'nodejsscan .'
+                sh 'nodejsscan --json .'
             }
             }
         }

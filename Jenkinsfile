@@ -28,6 +28,7 @@ pipeline {
         }
         stage('Run Tests') {
             steps {
+                script {
                 // sh 'npm install --save-dev jest-junit'
                 // sh 'npm test -- --coverage --ci'
                 // junit 'coverage/jest-junit.xml'
@@ -38,6 +39,7 @@ pipeline {
                 def appPath = "/var/lib/jenkins/workspace/Front"
                 docker.image('opensecurity/nodejsscan:latest').inside('--privileged -u root:root') {
                     sh 'nodejsscan --json .'
+                }
                 }
             }
         }

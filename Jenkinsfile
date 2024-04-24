@@ -108,6 +108,7 @@ pipeline {
         stage('OWASP ZAP Full Scan') {
             steps {
                 script {
+                    sh "rm -rf /var/lib/jenkins/workspace/Front/report"
                     sh "mkdir -p /var/lib/jenkins/workspace/Front/report"
                     sh "chmod 777 /var/lib/jenkins/workspace/Front/report"
                     sh "sudo docker run -v /var/lib/jenkins/workspace/Front:/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://192.168.56.7:80/ -r report/testreport.html || true"
